@@ -1,0 +1,2 @@
+https://github.com/knolleary/pubsubclient
+https://github.com/fdu/ESP8266-Arduino-Lua
