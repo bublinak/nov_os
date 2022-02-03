@@ -1,41 +1,44 @@
-//#include "settings.h"                                         // Settings file
-//#include "version.h"                                          // Version history file
+//#include "settings.h"                                                             // Settings file
+//#include "version.h"                                                              // Version history file
 #include <WiFi.h>
-#include "src/PubSubClient.h"
-
-#include "FS.h"
-#include <SPIFFS.h>
-#include <esp_spiffs.h>
-#include <Preferences.h>                                        // NVS flash interface
-#include <nvs_flash.h>                                          // NVS flash additional fonctionality lib.
-Preferences settings;
-
-// WiFi
-const char *ssid = "WiFi-HSP"; // Enter your WiFi name
-const char *password = "WiFi-HSP-ASUS";  // Enter WiFi password
-
-// MQTT Broker
-char server[32];
-const char *mqtt_server = server;
-const char *topic = "esp32/test";
-//const char *mqtt_username = "emqx";
-//const char *mqtt_password = "public";
-const int mqtt_port = 1883;
+#include "src/PubSubClient/PubSubClient.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+#include "src/Network/WiFi_handler.h"
+WiFihandler wifi;
 
-#define FORCE_COLD_BOOT 1                                       // Force cold boot
-#define FORMAT_SPIFFS_IF_FAILED 1                               // Auto-format SPIFFS if broken
-#define OS_VERSION "Gemini-1"                                   // Build OS
+const char *default_ssid = "IoT Craft devboard";                                    // Default WiFi SSID
+const char *default_pass = "12345678";                                              // Default WiFi PASS
+const char *default_addr = "iotboard";                                              // Default board address (http://____.local/)
 
-//#include "src/QueueArray.h"                                   // CommandcoreQueue library
-//QueueArray <String>coreQueue;
-#include "src/LuaWrapper.h"
+char server_addr[32] = "";                                                          // 32-char array for MQTT broker domain
+const char *mqtt_server = server_addr;                                              // Because of used library...
+char prefix[] = "nvias/iotcraft";                                                   // Prefix for the MQTT topic
+char default_server[] = "broker.hivemq.com";                                        // Default MQTT server
+int mqtt_port = 1883;                                                               // MQTT broker port (default)
 
-
+#include "src/LuaWrapper/LuaWrapper.h"                                              // Lua engine library
 LuaWrapper lua;
+
+#include <FS.h>                                                                     // Filesystem &
+#include <SPIFFS.h>                                                                 // SPIFFS drivers
+
+#include <Preferences.h>                                                            // NVS flash interface
+#include <nvs_flash.h>                                                              // NVS flash additional fonctionality lib.
+Preferences os_settings;
+
+#define FORCE_COLD_BOOT 1                                                           // Force cold boot
+#define FORMAT_SPIFFS_IF_FAILED 0                                                   // Auto-format SPIFFS if broken
+#define OS_VERSION "Gemini-2"                                                       // Build OS
+
+//#include "src/QueueArray.h"                                                       // CommandcoreQueue library
+//QueueArray <String>coreQueue;
+
+
+
+
 
 typedef struct Message 
 {
@@ -49,43 +52,46 @@ static QueueHandle_t coreQueue;
 void setup()
 {
     delay(1000);
-    settings.begin("os-pref", true);
+    os_settings.begin("os-pref", true);
     Serial.begin(115200);
 
 //=================  BOOT SELFCHECK =================
-    if(!settings.getUChar("boot", 0) || FORCE_COLD_BOOT){
+    if(!os_settings.getUChar("boot", 0) || FORCE_COLD_BOOT){
         // COLD BOOT HANDLER
         // UPGRADE PROCEDURE NOT IMPLEMENTED YET
         Serial.println("Cold boot");
-        settings.end();
+        os_settings.end();
         nvs_flash_erase();
         nvs_flash_init();
-        settings.begin("os-pref", false);
-        settings.putUChar("boot", 1);
-        settings.putString("version", OS_VERSION);
-        settings.end();
+        os_settings.begin("os-pref", false);
+        os_settings.putUChar("boot", 1);
+        os_settings.putString("version", OS_VERSION);
+
+        os_settings.putString("mqtt_server", String(default_server));
+
+        os_settings.end();
+
+        wifi.firstSetup(default_ssid, default_pass, default_addr);
     }
     coreQueue = xQueueCreate(16, sizeof(Message));
 
+    wifi.start();
+
     if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
         Serial.println("SPIFFS Mount Failed");
+        SPIFFS.format();
+        delay(500);
         return;
     }
+    delay(100);
     File file = SPIFFS.open("/script.lua", "w");
     file.print("print('Hello world!')\n\rdelay(1000)");
     file.close();
 
-    char the_addr[] = "broker.hivemq.com";
-    for(int i=0; i<sizeof(the_addr)/sizeof(char); i++){
-        server[i] = the_addr[i];
+    for(int i=0; i<sizeof(default_server)/sizeof(char); i++){
+        server_addr[i] = default_server[i];
     }
     // connecting to a WiFi network
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Connecting to WiFi..");
-    }
-    Serial.println("Connected to the WiFi network");
     //connecting to a mqtt broker
     client.setServer(mqtt_server, 1883);
     client.setCallback(callback);
@@ -120,7 +126,8 @@ void reconnect() {
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
-      delay(5000);
+      vTaskDelay(5000/portTICK_PERIOD_MS);
+      wifi.idle();
     }
   }
 }
@@ -133,5 +140,6 @@ void loop()
     client.loop();
     Serial.println(lua.Lua_dofile("/spiffs/script.lua"));
     client.publish("esp32/temperature", "Hello Friend :)");
+    wifi.idle();
     vTaskDelay(portTICK_PERIOD_MS);
 }

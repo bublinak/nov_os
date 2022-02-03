@@ -11,6 +11,8 @@
         "regex": "cpp",
         "functional": "cpp",
         "bitset": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "limits": "cpp",
+        "type_traits": "cpp"
     }
 }
