@@ -42,31 +42,33 @@ bool WiFihandler::start()
     wifi_settings.end();
     WiFi.begin(_ssid, _pass);
     WiFi.waitForConnectResult();
-    if (WiFi.status() != WL_CONNECTED) {
-        softAP_setup();
+    if (WiFi.status() != WL_CONNECTED) 
+    {
+        softAPsetup();
     }
 
 
 
     /* Setup web pages: root, wifi config pages, SO captive portal detectors and not found. */
     server.on("/", handleRoot);
-    server.on("/generate_204", handleRoot);                                         //Android captive portal. Maybe not needed. Might be handled by notFound handler.
-    server.on("/fwlink", handleRoot);                                               //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
+    server.on("/generate_204", handleRoot);    // Android captive portal. Maybe not needed. Might be handled by notFound handler.
+    server.on("/fwlink", handleRoot);          // Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
     server.onNotFound(handleNotFound);
-    server.begin();                                                                 // Web server start
+    server.begin();                            // Web server start
     Serial.println("HTTP server started");
 
-    if (!MDNS.begin(_addr)) {
-          Serial.println("Error setting up MDNS responder!");
+    if (!MDNS.begin(_addr)) 
+    {
+        Serial.println("Error setting up MDNS responder!");
         } else {
-          Serial.println("MDNS responder started");
-          // Add service to MDNS-SD
-          MDNS.addService("http", "tcp", 80);
+            Serial.println("MDNS responder started");
+            // Add service to MDNS-SD
+            MDNS.addService("http", "tcp", 80);
         }
     return true;
 }
 
-bool WiFihandler::softAP_setup()
+bool WiFihandler::softAPsetup()
 {
     wifi_settings.begin("wifi-pref", true);
     wifi_settings.getString("ap-ssid").toCharArray(_ssid, 32);
@@ -92,6 +94,45 @@ bool WiFihandler::idle()
     return true;
 }
 
+bool WiFihandler::connectResult()
+{
+	if(WiFi.waitForConnectResult() == WL_CONNECTED)
+	{
+		return WIFI_CONNECTED;
+	} 
+	if(WiFi.status() == WL_DISCONNECTED)
+	{
+		return WIFI_DISCONNECTED;
+	} 
+	if(WiFi.getMode() == WIFI_STA)
+	{
+		return WIFI_STATION;
+	}
+}
+
+bool WiFihandler::status()
+{
+	if(WiFi.status() == WL_CONNECTED)
+	{
+		return WIFI_CONNECTED;
+	} 
+	if(WiFi.status() == WL_DISCONNECTED)
+	{
+		return WIFI_DISCONNECTED;
+	} 
+	if(WiFi.getMode() == WIFI_STA)
+	{
+		return WIFI_STATION;
+	}
+}
+
+int WiFihandler::wget(String addr)
+{
+
+}
+
+//===========================================================================================================
+
 /** Is this an IP? */
 boolean isIp(String str) {
   for (size_t i = 0; i < str.length(); i++) {
@@ -113,41 +154,46 @@ String toStringIp(IPAddress ip) {
   return res;
 }
 
-/** Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again. */
+// Redirect to captive portal if we got a request for another domain. Return true in that case so the page handler do not try to handle the request again.
 boolean captivePortal() {
   if (!isIp(server.hostHeader()) && server.hostHeader() != (String(_addr) + ".local")) {
     Serial.println("Request redirected to captive portal");
     server.sendHeader("Location", String("http://") + toStringIp(server.client().localIP()), true);
-    server.send(302, "text/plain", "");   // Empty content inhibits Content-length header so we have to close the socket ourselves.
-    server.client().stop(); // Stop is needed because we sent no content length
+    server.send(302, "text/plain", "");     // Empty content inhibits Content-length header so we have to close the socket ourselves.
+    server.client().stop();                 // Stop is needed because we sent no content length
     return true;
   }
   return false;
 }
 
-/** Handle root or redirect to captive portal */
+// Handle root or redirect to captive portal
 void handleRoot() {
-  if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
-    return;
-  }
-  server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-  server.sendHeader("Pragma", "no-cache");
-  server.sendHeader("Expires", "-1");
+    if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
+        return;
+    }
+    server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    server.sendHeader("Pragma", "no-cache");
+    server.sendHeader("Expires", "-1");
 
-  String Page;
-  Page += F(
-            "<html><head></head><body>"
-            "<h1>HELLO WORLD!!</h1>");
-  if (server.client().localIP() == apIP) {
-    Page += String(F("<p>You are connected through the soft AP: ")) + String(WiFi.softAPIP()) + F("</p>");
-  } else {
-    Page += String(F("<p>You are connected through the wifi network: ")) + String(_ssid) + F("</p>");
-  }
-  Page += F(
-            "<p>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
-            "</body></html>");
+    /*
+    String Page;
+    Page += F(
+                "<html><head></head><body>"
+                "<h1>HELLO WORLD!!</h1>");
+    if (server.client().localIP() == apIP) {
+        Page += String(F("<p>You are connected through the soft AP: ")) + String(WiFi.softAPIP()) + F("</p>");
+    } else {
+        Page += String(F("<p>You are connected through the wifi network: ")) + String(_ssid) + F("</p>");
+    }
+    Page += F(
+                "<p>You may want to <a href='/wifi'>config the wifi connection</a>.</p>"
+                "</body></html>");
 
-  server.send(200, "text/html", Page);
+    server.send(200, "text/html", Page);
+    */
+    File file = SPIFFS.open("/index.html", "r");
+    server.send(200, "text/html",String(file.read()));
+    file.close();
 }
 
 void handleNotFound() {

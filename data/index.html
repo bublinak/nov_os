@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<title>ESPCraft board dashboard v.2.0</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style/w3.css">
+<link rel="stylesheet" href="style/g_fonts_raleway.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/v4-shims.css">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-teal w3-large w3-border-bottom" style="z-index:4">
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+  <span class="w3-bar-item w3-right"><a href="https://nvias.org/"><img src="/data/images/nvias_logo.svg" style="width:60%" class="w3-right" alt="Nvias logo"></a></span>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-teal w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s4">
+      <img src="/data/images/cmdblock.png" class="w3-box w3-margin-right" style="width:80px">
+    </div>
+    <div class="w3-col s8 w3-bar">
+      <span>Board ID: <strong>NX-01</strong></span><br>
+      #GREV1CUZ<br>
+
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+    <h5>Dashboard:</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-eye fa-fw"></i>  Overview</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fas fa-satellite-dish fa-fw"></i>  Channel Settings</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fas fa-code fa-fw"></i>  Code editor</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fas fa-satellite fa-fw"></i>  MQTT Settings</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fas fa-cloud-download-alt fa-fw"></i>  FW Update</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
+  </div>
+</nav>
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+  <!-- Header -->
+  <header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard fa-fw"></i> System info</b></h5>
+  </header>
+
+  <div class="w3-row-padding w3-margin-bottom">
+    <div class="w3-quarter">
+      <div class="w3-container w3-round w3-red w3-padding-16 w3-hover-shadow">
+        <div class="w3-grey w3-round">
+      <div class="w3-container w3-center w3-padding w3-lime w3-round" style="width:66%"></div>
+    </div>
+
+        <div class="w3-clear"></div>
+        <div class="w3-left"><=</div>
+        <div class="w3-right">=></div>
+        <div class="w3-center">66%</div>
+        <div class="w3-left"><i class="fas fa-sun w3-xxlarge"></i></div>
+        <div class="w3-right"><h4>Light</h4></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-round w3-blue w3-padding-16 w3-hover-shadow">
+        <div class="w3-grey w3-round">
+      <div class="w3-container w3-center w3-padding w3-lime w3-round" style="width:25%"></div>
+    </div>
+        <div class="w3-clear"></div>
+        <div class="w3-left"><=</div>
+        <div class="w3-right">=></div>
+        <div class="w3-center">22°C</div>
+        <div class="w3-left"><i class="fas fa-thermometer-half w3-xxlarge"></i></div>
+        <div class="w3-right"><h4>Temp</h4></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-round w3-teal w3-padding-16 w3-hover-shadow">
+        <div class="w3-grey w3-round">
+      <div class="w3-container w3-center w3-padding w3-lime w3-round" style="width:25%"></div>
+    </div>
+        <div class="w3-clear"></div>
+        <div class="w3-left"><=</div>
+        <div class="w3-right">=></div>
+        <div class="w3-center">-40 dBm</div>
+        <div class="w3-left"><i class="fas fa-wifi w3-xxlarge"></i></div>
+        <div class="w3-right"><h4>WiFi</h4></div>
+      </div>
+    </div>
+    <div class="w3-quarter">
+      <div class="w3-container w3-round w3-orange w3-text-white w3-padding-16 w3-hover-shadow">
+        <div class="w3-grey w3-round">
+      <div class="w3-container w3-center w3-padding w3-lime w3-round" style="width:25%"></div>
+    </div>
+        <div class="w3-clear"></div>
+        <div class="w3-left"><=</div>
+        <div class="w3-right">=></div>
+        <div class="w3-center">130 uT</div>
+        <div class="w3-left"><i class="fas fa-magnet w3-xxlarge"></i></div>
+        <div class="w3-right"><h4>Hall</h4></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="w3-panel">
+    <div class="w3-row-padding" style="margin:0 -16px">
+      <div class="w3-quarter">
+        <h5><b><i class="fa fa-history fa-fw"></i> Board</b></h5>
+        <img src="/data/images/espcraft_prduct_label.png" style="width:100%" alt="espcraft_prduct_image">
+      </div>
+      <div class="w3-half">
+        <h5>Info</h5>
+        <table class="w3-table w3-striped w3-white" style="width: 60%">
+          <tr>
+            <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
+            <td>Owner:</td>
+            <td>GREV1CUZ</td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
+            <td>Status:</td>
+            <td>Active</td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-share-alt w3-text-green w3-large"></i></td>
+            <td>Board name:</td>
+            <td>Bol</td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
+            <td>Registered ID:</td>
+            <td>#FA7639DB</td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
+            <td>Firmware:</td>
+            <td><a href="https://github.com/nvias/ESPCraft-2.0"><b>Update available</b></a></td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td>FW version:</td>
+            <td>#032A</td>
+            <td>    </td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-laptop w3-text-red w3-large"></i></td>
+            <td>HW rev.</td>
+            <td>v.3-4M</td>
+            <td>    </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <br>
+  <!-- Footer -->
+  <footer class="w3-container w3-padding-16 w3-light-grey">
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+  </footer>
+
+  <!-- End page content -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>
