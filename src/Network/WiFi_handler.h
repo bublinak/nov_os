@@ -16,6 +16,8 @@
     #include <Arduino.h>
     #include <WiFi.h>
 
+	#include "../ElegantOTA/ElegantOTA.h"
+
     #include <FS.h>                                                                     // Filesystem &
     #include <SPIFFS.h>                                                                 // SPIFFS drivers
 

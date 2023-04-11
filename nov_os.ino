@@ -34,7 +34,7 @@ terminal term;
 #include <nvs_flash.h>	 // NVS flash additional fonctionality lib.
 Preferences os_settings;
 
-#define FORCE_COLD_BOOT 1		  // Force cold boot
+#define FORCE_COLD_BOOT 0		  // Force cold boot
 #define FORMAT_SPIFFS_IF_FAILED 0 // Auto-format SPIFFS if broken
 #define OS_VERSION "Gemini-4"	  // Build OS
 

@@ -2,5 +2,6 @@
     "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
     "board": "esp32:esp32:esp32",
     "port": "COM9",
-    "sketch": "nov_os.ino"
+    "sketch": "nov_os.ino",
+	"output": "build/nov_os.bin"
 }

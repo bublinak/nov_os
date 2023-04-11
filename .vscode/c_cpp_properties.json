@@ -96,6 +96,7 @@
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\WebServer\\src",
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\DNSServer\\src",
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\ESPmDNS\\src",
+                "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\Update\\src",
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\FS\\src",
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\SPIFFS\\src",
                 "C:\\Users\\jirka\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.6\\libraries\\Preferences\\src",
@@ -353,7 +354,8 @@
                 "__ATOMIC_ACQ_REL=4",
                 "__ATOMIC_RELEASE=3",
                 "USBCON"
-            ]
+            ],
+            "compileCommands": "${workspaceFolder}/build/nov_os.bin/compile_commands.json"
         }
     ]
 }
